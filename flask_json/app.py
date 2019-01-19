@@ -21,50 +21,53 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 # user model
-class User(db.Model):
+class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
+    types = db.Column(db.String(80), unique=True)
     longitude = db.Column(db.Float, unique=False)
     latitude = db.Column(db.Float, unique=False)
 
-    def __init__(self, username, longitude, latitude):
-        self.username = username
+    def __init__(self, types, longitude, latitude):
+        self.types = types
         self.longitude = longitude
         self.latitude = latitude
       
 # user schema
-class UserSchema(ma.Schema):
+class IssueSchema(ma.Schema):
     class Meta:
-        fields = ('username', 'longitude', 'latitude')
+        fields = ('types', 'longitude', 'latitude')
 
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
+issue_schema = IssueSchema()
+issue_schema = IssueSchema(many=True)
 
 # endpoint 
-@app.route("/user", methods=["POST"])
+@app.route("/issues", methods=["POST"])
 
-def add_user():
+def add_issue():
     
-    username = request.json['username']
+    types = request.json['types']
     #longitude
     longitude = request.json['longitude']
     #latitude
     latitude = request.json['latitude']
     
-    new_user = User(username, longitude, latitude)
+    new_issue = Issue(types, longitude, latitude)
         
-    db.session.add(new_user)
+    db.session.add(new_issue)
     db.session.commit()
-    return jsonify(new_user)
+    
+    
+    return str(new_issue)
 
 
 # endpoint to show all users
-@app.route("/user", methods=["GET"])
-def get_user():
-    all_users = User.query.all()
-    result = users_schema.dump(all_users)
+@app.route("/all_issues", methods=["GET"])
+def get_issue():
+    all_users = Issue.query.all()
+    result = issue_schema.dump(all_users)
     return jsonify(result.data)
 
+"""
 # endpoint to get user detail by id
 @app.route("/user/<id>", methods=["GET"])
 def user_detail(id):
@@ -96,8 +99,7 @@ def user_delete(id):
     db.session.commit()
 
     return user_schema.jsonify(user)
-
-
+"""
 
 if __name__ == '__main__':
     app.run(debug=True) 
