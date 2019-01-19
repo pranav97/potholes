@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'map_view.dart';
 
 void main() => runApp(TabBarController());
 
@@ -20,9 +21,10 @@ class TabBarController extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              Icon(Icons.directions_car),
+              MapView(),
               SubmitPage(),
             ],
+            physics: NeverScrollableScrollPhysics(),
           ),
         ),
       ),
