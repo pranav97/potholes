@@ -1,19 +1,24 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { ExpoLinksView } from '@expo/samples';
+import { Button, View, StyleSheet } from 'react-native';
 
 export default class SubmitScreen extends React.Component {
+
+  constructor(props) {
+    super(props);
+  }
+
   static navigationOptions = {
     title: 'Submit',
   };
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        {/* Go ahead and delete ExpoLinksView and replace it with your
-           * content, we just wanted to provide you with some helpful links */}
-        <ExpoLinksView />
-      </ScrollView>
+      <View style={styles.container}>
+        <Button 
+          title="Submit" 
+          onPress={() => this.props.navigation.navigate('SignIn')} 
+        />
+      </View>
     );
   }
 }

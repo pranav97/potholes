@@ -25,7 +25,7 @@ HomeStack.navigationOptions = {
 };
 
 const SubmitStack = createStackNavigator({
-  Links: SubmitScreen,
+  Submit: SubmitScreen,
 });
 
 SubmitStack.navigationOptions = {
