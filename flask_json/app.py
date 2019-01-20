@@ -23,7 +23,7 @@ ma = Marshmallow(app)
 # user model
 class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    types = db.Column(db.String(80), unique=True)
+    types = db.Column(db.String(80), unique=False)
     longitude = db.Column(db.Float, unique=False)
     latitude = db.Column(db.Float, unique=False)
     severity = db.Column(db.Integer, unique=False)
@@ -39,7 +39,6 @@ class IssueSchema(ma.Schema):
     class Meta:
         fields = ('types', 'longitude', 'latitude', 'severity')
 
-issue_schema = IssueSchema()
 issue_schema = IssueSchema(many=True)
 
 # endpoint 
