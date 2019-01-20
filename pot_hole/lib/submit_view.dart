@@ -35,7 +35,7 @@ class _SubmitViewState extends State<SubmitView> {
     var roadProblem  = roadProblems[_radioValue];
 
     if (_radioValue == 7)
-      roadProblem = textController.text;
+      roadProblem = textController.text == "" ? "Other" : textController.text;
 
     var data = JsonEncoder().convert({'types': roadProblem,
       'longitude': LocationHolder.location.longitude.toString(),
