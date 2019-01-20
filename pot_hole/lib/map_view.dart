@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'main.dart';
 
 class MapView extends StatefulWidget {
   State createState() => _MapViewController();
@@ -8,23 +8,12 @@ class MapView extends StatefulWidget {
 
 class _MapViewController extends State<MapView> {
   GoogleMapController mapController;
-  var currentLocation = LatLng(45.521563, -122.677433);
-
-  @override
-  void initState() {
-    super.initState();
-
-    var location = new Location();
-    location.onLocationChanged().listen((Map<String, double> currentLoc) {
-      currentLocation = LatLng(currentLoc['latitude'], currentLoc['longitude']);
-    });
-  }
 
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: currentLocation,
-          zoom: 18.0,
+          target: LocationHolder.location,
+          zoom: 17.0,
         )
     ));
   }
@@ -34,20 +23,33 @@ class _MapViewController extends State<MapView> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        options: GoogleMapOptions(
-            cameraPosition: CameraPosition(
-              target: currentLocation,
-              zoom: 1.0,
-            )
+    LocationHolder.hasInit = true;
+
+    return Stack(
+      children: <Widget>[
+        Scaffold(
+          body: GoogleMap(
+            onMapCreated: _onMapCreated,
+            options: GoogleMapOptions(
+              cameraPosition: CameraPosition(
+                target: LocationHolder.location,
+                zoom: LocationHolder.hasInit ? 17 : 1,
+              )
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _handleFABPress,
+            child: Icon(Icons.center_focus_strong),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _handleFABPress,
-        child: Icon(Icons.center_focus_strong),
-      ),
-    );
+        Material (
+          child: TextField(
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
+              hintText: "Search Address",
+            ),
+          ),
+        )
+    ]);
   }
 }
