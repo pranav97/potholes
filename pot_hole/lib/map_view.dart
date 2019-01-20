@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:core';
 
 import 'main.dart';
 
@@ -12,9 +12,7 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewController extends State<MapView> {
-  final myController = TextEditingController();
   GoogleMapController mapController;
-
 
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
@@ -71,7 +69,35 @@ class _MapViewController extends State<MapView> {
   }
 
   void _searchAddress(a) {
+    var url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?";
+    url += "key=AIzaSyCUfMjcchqJUvvpPDDw675k5D37fvyIoyo&";
+    url += "inputtype=textquery&";
+    url += "fields=geometry&";
+    url += "input=" + Uri.encodeFull(a);
 
+    http.get(url).then((response) {
+      var obj = JsonDecoder().convert(response.body);
+      if (obj['status'] != 'OK') {
+        var specMsg = (obj['status'] == 'ZERO_RESULTS') ? "No results found" : "A general error occurred";
+        showDialog(
+          context: context,
+          builder: (buildContext) {
+            return AlertDialog(
+              title: new Text("Error"),
+              content: new Text(specMsg),
+            );
+          }
+        );
+      } else {
+        print(obj["candidates"][0]["geometry"]["location"]["lng"]);
+        print(obj["candidates"][0]["geometry"]["location"]["lng"]);
+        var loc = LatLng(obj["candidates"][0]["geometry"]["location"]["lat"],
+            obj["candidates"][0]["geometry"]["location"]["lng"]);
+        mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: loc, zoom:17)
+        ));
+      }
+    });
   }
 
   Widget build(BuildContext context) {
@@ -97,11 +123,12 @@ class _MapViewController extends State<MapView> {
         ),
         Material (
           child: TextField(
-            controller: myController,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
               hintText: "Search Address",
             ),
+            textInputAction: TextInputAction.go,
+            onSubmitted: _searchAddress,
           ),
         ),
         Padding(

@@ -29,13 +29,20 @@ class TabBarController extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            title: Text('PotFolio'),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {},
+              )
+            ],
+
             bottom: TabBar(
               tabs: [
                 Tab(text: "View Map"),
                 Tab(text: "Submit"),
               ],
             ),
-            title: Text('PotFolio'),
           ),
           body: TabBarView(
             children: [
