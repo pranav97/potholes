@@ -4,13 +4,27 @@ import 'package:location/location.dart';
 
 import 'map_view.dart';
 import 'submit_view.dart';
+import 'settings_view.dart';
 
-void main() => runApp(TabBarController());
+void main() => runApp(PotholeApp());
 
 
 class LocationHolder {
   static LatLng location = LatLng(100, 100);
   static bool hasInit = false;
+}
+
+class PotholeApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: "PotFolio",
+      home: TabBarController(),
+      routes: <String, WidgetBuilder>{
+        '/settings': (BuildContext context) => new SettingsRoute(),
+      },
+    );
+  }
 }
 
 class TabBarController extends StatelessWidget {
@@ -33,7 +47,7 @@ class TabBarController extends StatelessWidget {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.settings),
-                onPressed: () {},
+                onPressed: () {Navigator.of(context).pushNamed("/settings");},
               )
             ],
 
