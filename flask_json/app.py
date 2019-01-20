@@ -63,9 +63,9 @@ def add_issue():
 # endpoint to show all users
 @app.route("/all_issues", methods=["GET", "POST"])
 def get_issue():
-    longitude = request.json['longitude']
-    latitude =  request.json['latitude']
-    radius =    request.json['radius']
+    longitude = float(request.json['longitude'])
+    latitude =  float(request.json['latitude'])
+    radius =    float(request.json['radius'])
     
     lower_y = latitude - radius 
     upper_y = latitude + radius 
@@ -120,4 +120,4 @@ def user_delete(id):
 """
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, host='0.0.0.0', port=80) 

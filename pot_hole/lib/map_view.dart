@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+
+import 'dart:convert';
+import 'dart:io';
+
 import 'main.dart';
 
 class MapView extends StatefulWidget {
@@ -9,6 +14,21 @@ class MapView extends StatefulWidget {
 class _MapViewController extends State<MapView> {
   GoogleMapController mapController;
 
+
+  Future<void> watchMapLoc() async {
+    LatLng last;
+    while (true) {
+      sleep(Duration(milliseconds: 300));
+      if (mapController.cameraPosition.target == last)
+        continue;
+
+      print("asld;fjk");
+//        last = controller.cameraPosition.target;
+//
+//
+    }
+  }
+
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
@@ -16,6 +36,26 @@ class _MapViewController extends State<MapView> {
           zoom: 17.0,
         )
     ));
+  }
+
+  void _mapUpdatePress() {
+    var data = JsonEncoder().convert({'latitude': LocationHolder.location.longitude.toString(),
+      'longitude': LocationHolder.location.latitude.toString(),
+      'radius': '10'});
+    var url = "http://169.233.126.136/all_issues";
+    http.post(url, headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: data
+    ).then((response) {
+      var resp = JsonDecoder().convert(response.body);
+      for (var thing in resp) {
+        mapController.addMarker(
+          MarkerOptions(
+            position: LatLng(thing['longitude'], thing['latitude']),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+          )
+        );
+      }
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -34,7 +74,8 @@ class _MapViewController extends State<MapView> {
               cameraPosition: CameraPosition(
                 target: LocationHolder.location,
                 zoom: LocationHolder.hasInit ? 17 : 1,
-              )
+              ),
+              trackCameraPosition: true,
             ),
           ),
           floatingActionButton: FloatingActionButton(
@@ -49,7 +90,17 @@ class _MapViewController extends State<MapView> {
               hintText: "Search Address",
             ),
           ),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              onPressed: _mapUpdatePress,
+              child: Icon(Icons.autorenew),
+            ),
+          ),
+        ),
     ]);
   }
 }
