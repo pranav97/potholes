@@ -14,21 +14,6 @@ class MapView extends StatefulWidget {
 class _MapViewController extends State<MapView> {
   GoogleMapController mapController;
 
-
-  Future<void> watchMapLoc() async {
-    LatLng last;
-    while (true) {
-      sleep(Duration(milliseconds: 300));
-      if (mapController.cameraPosition.target == last)
-        continue;
-
-      print("asld;fjk");
-//        last = controller.cameraPosition.target;
-//
-//
-    }
-  }
-
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
