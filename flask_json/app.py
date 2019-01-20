@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan 19 02:14:36 2019
+
+@author: jeremytan
+"""
+
+from flask import Flask, request, jsonify 
+from flask_sqlalchemy import SQLAlchemy 
+from flask_marshmallow import Marshmallow 
+import os
+        
+
+
+app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'crud.sqlite')
+
+db = SQLAlchemy(app)
+ma = Marshmallow(app)
+
+# user model
+class Issue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    types = db.Column(db.String(80), unique=True)
+    longitude = db.Column(db.Float, unique=False)
+    latitude = db.Column(db.Float, unique=False)
+
+    def __init__(self, types, longitude, latitude):
+        self.types = types
+        self.longitude = longitude
+        self.latitude = latitude
+      
+# user schema
+class IssueSchema(ma.Schema):
+    class Meta:
+        fields = ('types', 'longitude', 'latitude')
+
+issue_schema = IssueSchema()
+issue_schema = IssueSchema(many=True)
+
+# endpoint 
+@app.route("/issues", methods=["POST"])
+
+def add_issue():
+    
+    types = request.json['types']
+    #longitude
+    longitude = request.json['longitude']
+    #latitude
+    latitude = request.json['latitude']
+    
+    new_issue = Issue(types, longitude, latitude)
+        
+    db.session.add(new_issue)
+    db.session.commit()
+    
+    
+    return str(new_issue)
+
+
+# endpoint to show all users
+@app.route("/all_issues", methods=["GET"])
+def get_issue():
+    all_users = Issue.query.all()
+    result = issue_schema.dump(all_users)
+    return jsonify(result.data)
+
+"""
+# endpoint to get user detail by id
+@app.route("/user/<id>", methods=["GET"])
+def user_detail(id):
+    user = User.query.get(id)
+    return user_schema.jsonify(user)
+
+# endpoint to update user
+@app.route("/user/<id>", methods=["PUT"])
+def user_update(id):
+    user = User.query.get(id)
+    username = request.json['username']
+    longitude = request.json['longitude']
+    latitude  = request.josn['latitude']
+    
+    user.longitude = longitude
+    user.latitude = latitude
+    user.username = username
+    
+
+    db.session.commit()
+    
+    return user_schema.jsonify(user)
+
+# endpoint to delete user
+@app.route("/user/<id>", methods=["DELETE"])
+def user_delete(id):
+    user = User.query.get(id)
+    db.session.delete(user)
+    db.session.commit()
+
+    return user_schema.jsonify(user)
+"""
+
+if __name__ == '__main__':
+    app.run(debug=True) 
