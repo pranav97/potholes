@@ -26,16 +26,18 @@ class Issue(db.Model):
     types = db.Column(db.String(80), unique=True)
     longitude = db.Column(db.Float, unique=False)
     latitude = db.Column(db.Float, unique=False)
+    severity = db.Column(db.Integer, unique=False)
 
-    def __init__(self, types, longitude, latitude):
+    def __init__(self, types, longitude, latitude, severity):
         self.types = types
         self.longitude = longitude
         self.latitude = latitude
+        self.severity = severity
       
 # user schema
 class IssueSchema(ma.Schema):
     class Meta:
-        fields = ('types', 'longitude', 'latitude')
+        fields = ('types', 'longitude', 'latitude', 'severity')
 
 issue_schema = IssueSchema()
 issue_schema = IssueSchema(many=True)
@@ -50,12 +52,13 @@ def add_issue():
     longitude = request.json['longitude']
     #latitude
     latitude = request.json['latitude']
+    #severity
+    severity = request.json['severity']
     
-    new_issue = Issue(types, longitude, latitude)
+    new_issue = Issue(types, longitude, latitude, severity)
         
     db.session.add(new_issue)
     db.session.commit()
-    
     
     return str(new_issue)
 
@@ -77,12 +80,10 @@ def get_issue():
     return jsonify(result.data)
 
 @app.route("/get_all", methods=["GET"])
-
 def get_all():
     all_issues = Issue.query.all()
     result = issue_schema.dump(all_issues)
     return jsonify(result.data)
-
 
 
 """
@@ -99,12 +100,13 @@ def user_update(id):
     username = request.json['username']
     longitude = request.json['longitude']
     latitude  = request.josn['latitude']
+    severity = request.json['severity']
     
     user.longitude = longitude
     user.latitude = latitude
     user.username = username
+    user.severity = severity
     
-
     db.session.commit()
     
     return user_schema.jsonify(user)
