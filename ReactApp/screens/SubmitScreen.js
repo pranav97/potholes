@@ -2,11 +2,6 @@ import React from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 
 export default class SubmitScreen extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   static navigationOptions = {
     title: 'Submit',
   };
