@@ -3,18 +3,26 @@ import 'package:http/http.dart' as http;
 import 'main.dart';
 import 'dart:convert';
 
-class SubmitPage extends StatefulWidget {
-  SubmitPage({Key key}) : super(key: key);
+class SubmitView extends StatefulWidget {
+  SubmitView({Key key}) : super(key: key);
 
   @override
-  _SubmitPageState createState() => _SubmitPageState();
+  _SubmitViewState createState() => _SubmitViewState();
 }
 
-class _SubmitPageState extends State<SubmitPage> {
-  List<String> roadProblems = ['Potholes', 'Bumpy', 'Poorly Paved', 'Litter',
-    'Placeholder', 'Placeholder', 'Placeholder', 'Other'];
+class _SubmitViewState extends State<SubmitView> {
   int _radioValue = 0;
   double _sliderValue = 10.0;
+  List<String> roadProblems = ['Potholes', 'Bumpy', 'Poorly Paved', 'Litter',
+    'Spillage', 'Broken Barrier', 'Slippery When Wet', 'Other'];
+
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 
   void _handleRadioValueChange(int value) {
     setState(() {
@@ -24,27 +32,43 @@ class _SubmitPageState extends State<SubmitPage> {
 
   void _submitForm() {
     var url = "http://169.233.126.136/issues";
-    var data = JsonEncoder().convert({'types': roadProblems[_radioValue].toString(),
+    var roadProblem  = roadProblems[_radioValue];
+
+    if (_radioValue == 7)
+      roadProblem = textController.text;
+
+    var data = JsonEncoder().convert({'types': roadProblem,
       'longitude': LocationHolder.location.longitude.toString(),
       'latitude': LocationHolder.location.latitude.toString(),
       'severity': _sliderValue
     });
 
     http.post(url,
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: data
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: data
     ).then((response) {
       print("Response body: ${response.body}");
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: Text('Successfully Submitted!'),
+              titlePadding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 20.0, bottom: 20.0),
+            );
+          }
+        );
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return ListView(
+//        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
+              padding: const EdgeInsets.only(left: 120.0, top: 30.0, bottom: 15.0),
               child: Text(
                 'Road Problem:',
                 style: TextStyle(fontSize: 20.0),
@@ -167,12 +191,20 @@ class _SubmitPageState extends State<SubmitPage> {
                 groupValue: _radioValue,
                 onChanged: _handleRadioValueChange,
               ),
-              new Text('${roadProblems[7]}')
+              new Flexible(
+                child: new TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Other',
+                  ),
+                  controller: textController,
+                )
+              )
             ],
           ),
 
           new Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.only(left: 100.0, top: 30.0, bottom: 15.0),
               child: Text(
                 'Severity of Problem:',
                 style: TextStyle(fontSize: 20.0),

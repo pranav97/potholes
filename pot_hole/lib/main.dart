@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 import 'map_view.dart';
-import 'submit_page.dart';
+import 'submit_view.dart';
 
 void main() => runApp(TabBarController());
 
@@ -47,7 +47,7 @@ class TabBarController extends StatelessWidget {
           body: TabBarView(
             children: [
               MapView(),
-              SubmitPage(),
+              SubmitView(),
             ],
             physics: NeverScrollableScrollPhysics(),
           ),
