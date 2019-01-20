@@ -12,7 +12,9 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewController extends State<MapView> {
+  final myController = TextEditingController();
   GoogleMapController mapController;
+
 
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
@@ -24,19 +26,39 @@ class _MapViewController extends State<MapView> {
   }
 
   void _mapUpdatePress() {
-    var data = JsonEncoder().convert({'latitude': LocationHolder.location.longitude.toString(),
-      'longitude': LocationHolder.location.latitude.toString(),
+    var data = JsonEncoder().convert({'longitude': LocationHolder.location.longitude.toString(),
+      'latitude': LocationHolder.location.latitude.toString(),
       'radius': '10'});
     var url = "http://169.233.126.136/all_issues";
+
     http.post(url, headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: data
     ).then((response) {
       var resp = JsonDecoder().convert(response.body);
+
+      mapController.clearMarkers();
       for (var thing in resp) {
+        var sever = thing['severity'];
+        var sevStr = "Something is broke";
+        var hue = BitmapDescriptor.hueGreen;
+        print(sever);
+
+        if (sever <= 3) {
+          hue = BitmapDescriptor.hueBlue;
+          sevStr = "Fair";
+        } else if (sever > 3 && sever <= 7) {
+          hue = BitmapDescriptor.hueOrange;
+          sevStr = "Moderate";
+        } else if (sever > 7) {
+          hue = BitmapDescriptor.hueRed;
+          sevStr = "Severe";
+        }
+
         mapController.addMarker(
           MarkerOptions(
-            position: LatLng(thing['longitude'], thing['latitude']),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+            position: LatLng(thing['latitude'], thing['longitude']),
+            icon: BitmapDescriptor.defaultMarkerWithHue(hue),
+            infoWindowText: InfoWindowText(thing['types'], sevStr)
           )
         );
       }
@@ -45,6 +67,11 @@ class _MapViewController extends State<MapView> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    _mapUpdatePress();
+  }
+
+  void _searchAddress(a) {
+
   }
 
   Widget build(BuildContext context) {
@@ -70,6 +97,7 @@ class _MapViewController extends State<MapView> {
         ),
         Material (
           child: TextField(
+            controller: myController,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
               hintText: "Search Address",

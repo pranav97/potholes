@@ -35,7 +35,7 @@ class TabBarController extends StatelessWidget {
                 Tab(text: "Submit"),
               ],
             ),
-            title: Text('Potfolio'),
+            title: Text('PotFolio'),
           ),
           body: TabBarView(
             children: [
