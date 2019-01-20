@@ -31,7 +31,7 @@ class _SubmitViewState extends State<SubmitView> {
   }
 
   void _submitForm() {
-    var url = "http://169.233.126.136/issues";
+    var url = "http://potfolio.appspot.com/issues";
     var roadProblem  = roadProblems[_radioValue];
 
     if (_radioValue == 7)

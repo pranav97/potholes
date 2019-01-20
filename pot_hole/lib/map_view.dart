@@ -28,7 +28,7 @@ class _MapViewController extends State<MapView> {
     var data = JsonEncoder().convert({'longitude': LocationHolder.location.longitude.toString(),
       'latitude': LocationHolder.location.latitude.toString(),
       'radius': '10'});
-    var url = "http://169.233.126.136/all_issues";
+    var url = "http://potfolio.appspot.com/all_issues";
 
     http.post(url, headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: data
