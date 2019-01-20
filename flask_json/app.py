@@ -61,11 +61,29 @@ def add_issue():
 
 
 # endpoint to show all users
-@app.route("/all_issues", methods=["GET"])
+@app.route("/all_issues", methods=["GET", "POST"])
 def get_issue():
-    all_users = Issue.query.all()
-    result = issue_schema.dump(all_users)
+    longitude = request.json['longitude']
+    latitude =  request.json['latitude']
+    radius =    request.json['radius']
+    
+    lower_y = latitude - radius 
+    upper_y = latitude + radius 
+    lower_x = longitude - radius 
+    upper_x = longitude + radius 
+    
+    all_issues = Issue.query.filter(Issue.longitude > lower_x, Issue.longitude < upper_x, Issue.latitude > lower_y, Issue.latitude < upper_y)
+    result = issue_schema.dump(all_issues)
     return jsonify(result.data)
+
+@app.route("/get_all", methods=["GET"])
+
+def get_all():
+    all_issues = Issue.query.all()
+    result = issue_schema.dump(all_issues)
+    return jsonify(result.data)
+
+
 
 """
 # endpoint to get user detail by id
