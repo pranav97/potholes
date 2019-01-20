@@ -13,6 +13,7 @@ class MapView extends StatefulWidget {
 
 class _MapViewController extends State<MapView> {
   GoogleMapController mapController;
+  var mapsStyle = '[{"featureType":"administrative","elementType":"geometry","stylers":[{"visibility":"off"}]},{"featureType":"poi","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"transit","stylers":[{"visibility":"off"}]}]';
 
   void _handleFABPress() {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
@@ -109,6 +110,7 @@ class _MapViewController extends State<MapView> {
           body: GoogleMap(
             onMapCreated: _onMapCreated,
             options: GoogleMapOptions(
+              compassEnabled: false,
               cameraPosition: CameraPosition(
                 target: LocationHolder.location,
                 zoom: LocationHolder.hasInit ? 17 : 1,
@@ -117,6 +119,7 @@ class _MapViewController extends State<MapView> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
+            heroTag: "thisIsAlsoUnique",
             onPressed: _handleFABPress,
             child: Icon(Icons.center_focus_strong),
           ),
@@ -136,6 +139,7 @@ class _MapViewController extends State<MapView> {
           child: Align(
             alignment: Alignment.bottomLeft,
             child: FloatingActionButton(
+              heroTag: "thisIsUnique",
               onPressed: _mapUpdatePress,
               child: Icon(Icons.autorenew),
             ),
